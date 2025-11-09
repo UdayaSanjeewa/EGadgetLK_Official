@@ -137,21 +137,33 @@ export async function getProductById(id: string): Promise<Product | null> {
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const { data } = await supabase
+  const { data: categoriesData } = await supabase
     .from('categories')
     .select('*')
     .order('name');
 
-  if (!data) return [];
+  if (!categoriesData) return [];
 
-  return data.map(c => ({
-    id: c.id,
-    name: c.name,
-    slug: c.slug,
-    image: c.image_url || '',
-    description: c.description || '',
-    productCount: 0
-  }));
+  // Get product counts for each category
+  const categoriesWithCounts = await Promise.all(
+    categoriesData.map(async (category) => {
+      const { count } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true })
+        .eq('category_id', category.id);
+
+      return {
+        id: category.id,
+        name: category.name,
+        slug: category.slug,
+        image: category.image_url || '',
+        description: category.description || '',
+        productCount: count || 0
+      };
+    })
+  );
+
+  return categoriesWithCounts;
 }
 
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
