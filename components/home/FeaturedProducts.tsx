@@ -90,27 +90,21 @@ export function FeaturedProducts() {
   };
 
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Latest Products
-            </h2>
-            <p className="text-lg text-gray-600">
-              Discover our newest and featured listings
-            </p>
+    <section className="py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+      <div className="absolute inset-0 bg-dot-pattern opacity-5"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-100 to-pink-100 rounded-full mb-4">
+            <Star className="h-4 w-4 text-orange-600 fill-current" />
+            <span className="text-sm font-semibold text-orange-600">Featured Products</span>
           </div>
-          <Link
-            href="/featured"
-            className="mt-4 md:mt-0 text-blue-600 hover:text-blue-700 font-semibold inline-flex items-center"
-          >
-            View All Featured
-            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+            Trending Right Now
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Handpicked premium products loved by our community
+          </p>
         </div>
 
         {/* Products Grid */}
@@ -123,11 +117,14 @@ export function FeaturedProducts() {
             <p className="text-gray-500">No featured products available</p>
           </div>
         ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {products.map((product, index) => (
             <div
               key={product.id}
-              className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-200 hover:border-blue-400 transform hover:-translate-y-2"
+              style={{
+                animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
+              }}
             >
               <Link href={`/product/${product.id}`}>
                 {/* Product Image */}
@@ -275,16 +272,35 @@ export function FeaturedProducts() {
         )}
 
         {/* Load More */}
-        <div className="text-center mt-12">
-          <Button
-            variant="outline"
-            size="lg"
-            className="px-8 py-3 border-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
-          >
-            Load More Products
-          </Button>
+        <div className="text-center mt-16">
+          <Link href="/search">
+            <Button
+              size="lg"
+              className="px-10 py-6 bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 hover:from-orange-600 hover:via-pink-600 hover:to-red-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+            >
+              View All Products
+            </Button>
+          </Link>
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .bg-dot-pattern {
+          background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+          background-size: 20px 20px;
+        }
+      `}</style>
     </section>
   );
 }
