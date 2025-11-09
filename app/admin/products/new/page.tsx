@@ -89,6 +89,7 @@ export default function NewProduct() {
       }
 
       const { data, error } = await supabase.from('products').insert({
+        name: formData.title,
         title: formData.title,
         description: formData.description,
         price: parseFloat(formData.price),

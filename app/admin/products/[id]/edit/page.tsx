@@ -36,7 +36,6 @@ export default function EditProduct() {
     original_price: '',
     category_id: '',
     condition: 'used',
-    location: '',
     seller_name: 'Admin',
     seller_rating: '5',
     is_featured: false,
@@ -96,7 +95,6 @@ export default function EditProduct() {
       original_price: data.original_price?.toString() || '',
       category_id: data.category_id || '',
       condition: data.condition,
-      location: data.location,
       seller_name: data.seller_name,
       seller_rating: data.seller_rating.toString(),
       is_featured: data.is_featured,
@@ -130,6 +128,7 @@ export default function EditProduct() {
       const { error } = await supabase
         .from('products')
         .update({
+          name: formData.title,
           title: formData.title,
           description: formData.description,
           price: parseFloat(formData.price),
@@ -137,7 +136,7 @@ export default function EditProduct() {
           images: filteredImages,
           category_id: formData.category_id || null,
           condition: formData.condition as 'new' | 'used' | 'refurbished',
-          location: formData.location,
+          location: '',
           seller_name: formData.seller_name,
           seller_rating: parseFloat(formData.seller_rating),
           features: filteredFeatures,
@@ -286,16 +285,6 @@ export default function EditProduct() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="location">Location *</Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => setFormData({...formData, location: e.target.value})}
-                  required
-                />
               </div>
             </CardContent>
           </Card>
