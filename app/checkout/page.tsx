@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { supabase } from '@/lib/supabase';
+import { paymentGateway } from '@/lib/payment-gateway';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ArrowLeft, CreditCard, Truck, Package, MapPin } from 'lucide-react';
+import { ArrowLeft, CreditCard, Truck, Package, MapPin, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
@@ -194,14 +195,35 @@ export default function CheckoutPage() {
         throw itemsError;
       }
 
+      if (formData.payment_method === 'card_payment') {
+        const paymentResult = await paymentGateway.initiatePayment({
+          orderId: order.id,
+          orderNumber: order.order_number,
+          amount: cartTotal,
+          currency: 'LKR',
+          customerName: formData.name,
+          customerEmail: formData.email,
+          customerMobile: formData.mobile,
+          description: `Order ${order.order_number}`,
+        });
+
+        if (paymentResult.success && paymentResult.paymentUrl) {
+          clearCart();
+          window.location.href = paymentResult.paymentUrl;
+          return;
+        } else {
+          throw new Error(paymentResult.error || 'Failed to initiate payment');
+        }
+      }
+
       clearCart();
 
       toast.success('Order placed successfully!');
       router.push(`/account/orders`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error placing order:', error);
-      toast.error('Failed to place order. Please try again.');
+      toast.error(error.message || 'Failed to place order. Please try again.');
     } finally {
       setIsPlacingOrder(false);
     }
@@ -409,25 +431,47 @@ export default function CheckoutPage() {
                   value={formData.payment_method}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, payment_method: value }))}
                 >
-                  <div className="flex items-center space-x-2 border rounded-lg p-4">
-                    <RadioGroupItem value="cash_on_delivery" id="cod" />
-                    <Label htmlFor="cod" className="flex-1 cursor-pointer">
-                      <div>
-                        <p className="font-medium">Cash on Delivery</p>
-                        <p className="text-sm text-gray-600">Pay when you receive your order</p>
+                  <div className="flex items-center space-x-2 border rounded-lg p-4 hover:border-blue-300 transition-colors">
+                    <RadioGroupItem value="card_payment" id="card" />
+                    <Label htmlFor="card" className="flex-1 cursor-pointer">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium flex items-center gap-2">
+                            <CreditCard className="h-4 w-4" />
+                            Card Payment
+                          </p>
+                          <p className="text-sm text-gray-600">Pay securely with your credit/debit card</p>
+                        </div>
+                        {paymentGateway.isConfigured() && (
+                          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                            Secure
+                          </span>
+                        )}
                       </div>
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-2 border rounded-lg p-4 opacity-50">
-                    <RadioGroupItem value="bank_transfer" id="bank" disabled />
-                    <Label htmlFor="bank" className="flex-1">
-                      <div>
-                        <p className="font-medium">Bank Transfer</p>
-                        <p className="text-sm text-gray-600">Coming soon</p>
+                  <div className="flex items-center space-x-2 border rounded-lg p-4 hover:border-blue-300 transition-colors">
+                    <RadioGroupItem value="cash_on_delivery" id="cod" />
+                    <Label htmlFor="cod" className="flex-1 cursor-pointer">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium flex items-center gap-2">
+                            <Wallet className="h-4 w-4" />
+                            Cash on Delivery
+                          </p>
+                          <p className="text-sm text-gray-600">Pay when you receive your order</p>
+                        </div>
                       </div>
                     </Label>
                   </div>
                 </RadioGroup>
+                {!paymentGateway.isConfigured() && formData.payment_method === 'card_payment' && (
+                  <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      Card payment is not configured. Please contact support.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
