@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Test Accounts</title>
+  <title>Create Admin & Customer Accounts</title>
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -94,7 +94,7 @@
   <div class="container">
     <h1>Create Test Accounts</h1>
     <p class="description">
-      Click the button below to create 9 test accounts (3 regular users, 3 admins, and 3 sellers).
+      Click the button below to create 6 test accounts (3 customers and 3 admins).
     </p>
 
     <button id="createBtn" onclick="createAccounts()">Create All Accounts</button>
@@ -103,24 +103,17 @@
 
     <div class="accounts-list">
       <div class="account-type">
-        <h3>Regular Users</h3>
+        <h3>Customer Accounts</h3>
         <div class="account">Email: user1@sibn.com | Password: user123</div>
         <div class="account">Email: user2@sibn.com | Password: user123</div>
         <div class="account">Email: user3@sibn.com | Password: user123</div>
       </div>
 
       <div class="account-type">
-        <h3>Admin Users</h3>
+        <h3>Admin Accounts</h3>
         <div class="account">Email: admin1@sibn.com | Password: admin123</div>
         <div class="account">Email: admin2@sibn.com | Password: admin123</div>
         <div class="account">Email: admin3@sibn.com | Password: admin123</div>
-      </div>
-
-      <div class="account-type">
-        <h3>Seller Users</h3>
-        <div class="account">Email: seller1@sibn.com | Password: seller123</div>
-        <div class="account">Email: seller2@sibn.com | Password: seller123</div>
-        <div class="account">Email: seller3@sibn.com | Password: seller123</div>
       </div>
     </div>
   </div>
@@ -136,11 +129,11 @@
       result.innerHTML = '<strong>Creating accounts...</strong><br>This may take a few seconds.';
 
       try {
-        const response = await fetch('https://fwnwrrlvsulybfjjiuhm.supabase.co/functions/v1/create-users', {
+        const response = await fetch('https://xmygsyqiogqbwfotnnxp.supabase.co/functions/v1/create-users', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3bndycmx2c3VseWJmamppdWhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4NjA5NTYsImV4cCI6MjA3NjQzNjk1Nn0.jl1gDB1ksdDBAPkWFeEqGnoYS7kb05QXCHfIq5csCec'
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhteWdzeXFpb2dxYndmb3RubnhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3MDI5ODUsImV4cCI6MjA3ODI3ODk4NX0.o-kfvsz_J2-k_iI8ftiMKCwQr1IHl4vH8-aIw5xuvg4'
           }
         });
 

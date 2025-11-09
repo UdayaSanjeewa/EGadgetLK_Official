@@ -26,23 +26,23 @@ Deno.serve(async (req: Request) => {
     });
 
     const users = [
-      // Regular Users
+      // Regular Users (Customers)
       {
         email: 'user1@sibn.com',
         password: 'user123',
-        role: 'user',
+        role: 'customer',
         name: 'John Smith',
       },
       {
         email: 'user2@sibn.com',
         password: 'user123',
-        role: 'user',
+        role: 'customer',
         name: 'Sarah Johnson',
       },
       {
         email: 'user3@sibn.com',
         password: 'user123',
-        role: 'user',
+        role: 'customer',
         name: 'Mike Davis',
       },
       // Admin Users
@@ -64,34 +64,6 @@ Deno.serve(async (req: Request) => {
         role: 'admin',
         name: 'Admin Three',
       },
-      // Seller Users
-      {
-        email: 'seller1@sibn.com',
-        password: 'seller123',
-        role: 'seller',
-        name: 'Tech Store',
-        businessName: 'Tech Store Electronics',
-        businessEmail: 'contact@techstore.com',
-        businessPhone: '+1234567890',
-      },
-      {
-        email: 'seller2@sibn.com',
-        password: 'seller123',
-        role: 'seller',
-        name: 'Fashion Hub',
-        businessName: 'Fashion Hub Clothing',
-        businessEmail: 'info@fashionhub.com',
-        businessPhone: '+1234567891',
-      },
-      {
-        email: 'seller3@sibn.com',
-        password: 'seller123',
-        role: 'seller',
-        name: 'Home Goods',
-        businessName: 'Home Goods Essentials',
-        businessEmail: 'support@homegoods.com',
-        businessPhone: '+1234567892',
-      },
     ];
 
     const results = [];
@@ -112,9 +84,6 @@ Deno.serve(async (req: Request) => {
         email: userData.email,
         password: userData.password,
         email_confirm: true,
-        user_metadata: {
-          role: userData.role,
-        },
       });
 
       if (error) {
@@ -124,28 +93,14 @@ Deno.serve(async (req: Request) => {
           error: error.message,
         });
       } else {
-        // Create user profile for all users
+        // Update profile role
         await supabaseAdmin
-          .from('user_profiles')
-          .insert({
-            id: data.user.id,
-            email: userData.email,
-            name: userData.name,
-          });
-
-        // Create seller profile if user is a seller
-        if (userData.role === 'seller') {
-          await supabaseAdmin
-            .from('seller_profiles')
-            .insert({
-              id: data.user.id,
-              business_name: userData.businessName,
-              business_email: userData.businessEmail,
-              business_phone: userData.businessPhone,
-              is_verified: true,
-              is_active: true,
-            });
-        }
+          .from('profiles')
+          .update({ 
+            full_name: userData.name,
+            role: userData.role 
+          })
+          .eq('id', data.user.id);
 
         results.push({
           email: userData.email,
