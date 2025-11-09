@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { CategoryImageUpload } from '@/components/admin/CategoryImageUpload';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
@@ -186,30 +187,10 @@ export default function EditCategory() {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="image">Image URL</Label>
-                <Input
-                  id="image"
-                  type="url"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
-
-              {formData.image && (
-                <div>
-                  <Label>Image Preview</Label>
-                  <img
-                    src={formData.image}
-                    alt="Preview"
-                    className="w-full h-48 object-cover rounded-md mt-2"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://images.pexels.com/photos/1670187/pexels-photo-1670187.jpeg';
-                    }}
-                  />
-                </div>
-              )}
+              <CategoryImageUpload
+                imageUrl={formData.image}
+                onImageChange={(url) => setFormData({ ...formData, image: url })}
+              />
 
               <div className="flex space-x-4">
                 <Button
