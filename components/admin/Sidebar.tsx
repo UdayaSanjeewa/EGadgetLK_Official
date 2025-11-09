@@ -57,7 +57,7 @@ export function Sidebar() {
           <Link href="/admin" className="flex items-center space-x-2">
             <Store className="h-8 w-8 text-blue-400" />
             <div>
-              <h1 className="text-lg font-bold">SIBN Admin</h1>
+              <h1 className="text-lg font-bold">E-GadgetLK Admin</h1>
               <p className="text-xs text-slate-400">Ecommerce Portal</p>
             </div>
           </Link>

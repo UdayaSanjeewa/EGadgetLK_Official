@@ -49,8 +49,8 @@ export function Header() {
                 <ShoppingCart className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">SIBN Ecommerce</h1>
-                <p className="text-xs text-gray-500">Your Marketplace</p>
+                <h1 className="text-xl font-bold text-gray-900">E-GadgetLK</h1>
+                <p className="text-xs text-gray-500">Your Tech Store</p>
               </div>
             </Link>
 

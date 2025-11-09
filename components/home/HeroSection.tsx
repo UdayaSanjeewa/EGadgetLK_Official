@@ -123,7 +123,7 @@ export function HeroSection() {
             {/* Stats Card */}
             <div className="hidden lg:block">
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-2xl">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Why Choose SIBN?</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Why Choose E-GadgetLK?</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">50K+</div>

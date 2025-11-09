@@ -23,8 +23,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>SIBN Ecommerce - Sri Lanka&apos;s Largest Online Marketplace</title>
-        <meta name="description" content="Buy and sell everything from cars to electronics, property to fashion. Join millions of users on Sri Lanka's most trusted marketplace." />
+        <title>E-GadgetLK - Sri Lanka&apos;s Premier Electronics & Gadgets Store</title>
+        <meta name="description" content="Shop the latest smartphones, laptops, tablets, and electronics at E-GadgetLK. Sri Lanka's most trusted tech marketplace with the best prices." />
         <link rel="icon" href="/favicon.ico" />
         <meta name="theme-color" content="#1e40af" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />

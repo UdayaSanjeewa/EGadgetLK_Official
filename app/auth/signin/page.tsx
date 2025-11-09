@@ -60,8 +60,8 @@ export default function SignInPage() {
               <ShoppingCart className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">SIBN Ecommerce</h1>
-              <p className="text-sm text-gray-500">Your Marketplace</p>
+              <h1 className="text-2xl font-bold text-gray-900">E-GadgetLK</h1>
+              <p className="text-sm text-gray-500">Your Tech Store</p>
             </div>
           </Link>
         </div>
@@ -72,7 +72,7 @@ export default function SignInPage() {
               Welcome Back
             </CardTitle>
             <CardDescription className="text-center text-gray-600">
-              Sign in to your account to continue
+              Sign in to explore the latest tech
             </CardDescription>
           </CardHeader>
           <CardContent>

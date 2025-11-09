@@ -44,7 +44,7 @@ export default function SignUpPage() {
         setError(result.error || 'Sign up failed');
         toast.error(result.error || 'Sign up failed');
       } else {
-        toast.success('Account created successfully! Welcome to SIBN Ecommerce!');
+        toast.success('Account created successfully! Welcome to E-GadgetLK!');
         setTimeout(() => {
           router.push('/');
           router.refresh();
@@ -68,8 +68,8 @@ export default function SignUpPage() {
               <ShoppingCart className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">SIBN Ecommerce</h1>
-              <p className="text-sm text-gray-500">Your Marketplace</p>
+              <h1 className="text-2xl font-bold text-gray-900">E-GadgetLK</h1>
+              <p className="text-sm text-gray-500">Your Tech Store</p>
             </div>
           </Link>
         </div>
@@ -80,7 +80,7 @@ export default function SignUpPage() {
               Create Account
             </CardTitle>
             <CardDescription className="text-center text-gray-600">
-              Join thousands of users on Sri Lanka's largest marketplace
+              Join thousands of tech enthusiasts at Sri Lanka's premier gadget store
             </CardDescription>
           </CardHeader>
           <CardContent>
