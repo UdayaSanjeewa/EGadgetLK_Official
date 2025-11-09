@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { ProductGrid } from '@/components/category/ProductGrid';
+import { ProductGrid } from '@/components/product/ProductGrid';
 import { SearchFilters } from '@/components/search/SearchFilters';
 import { SearchHeader } from '@/components/search/SearchHeader';
 import { Product } from '@/types';

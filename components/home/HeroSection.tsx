@@ -13,7 +13,7 @@ const heroSlides = [
     description: "From luxury cars to budget-friendly options, find the perfect vehicle for your needs.",
     image: "https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg?auto=compress&cs=tinysrgb&w=1200",
     cta: "Browse Vehicles",
-    ctaLink: "/category/vehicles",
+    ctaLink: "/categories/vehicles",
     stats: "12,000+ Cars Available"
   },
   {
@@ -23,7 +23,7 @@ const heroSlides = [
     description: "From smartphones to laptops, find the latest electronics at unbeatable prices.",
     image: "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=1200",
     cta: "Shop Electronics",
-    ctaLink: "/category/electronics",
+    ctaLink: "/categories/electronics",
     stats: "25,000+ Tech Products"
   },
   {
@@ -33,7 +33,7 @@ const heroSlides = [
     description: "Explore houses, apartments, and commercial properties in prime locations across Sri Lanka.",
     image: "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1200",
     cta: "View Properties",
-    ctaLink: "/category/property",
+    ctaLink: "/categories/property",
     stats: "5,000+ Properties Listed"
   }
 ];

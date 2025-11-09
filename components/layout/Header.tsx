@@ -157,7 +157,7 @@ export function Header() {
                       {categories.map((category) => (
                         <Link
                           key={category.id}
-                          href={`/category/${category.slug}`}
+                          href={`/categories/${category.slug}`}
                           onClick={() => setIsCategoriesOpen(false)}
                           className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                         >
@@ -173,7 +173,7 @@ export function Header() {
               {categories.slice(0, 7).map((category) => (
                 <Link
                   key={category.id}
-                  href={`/category/${category.slug}`}
+                  href={`/categories/${category.slug}`}
                   className="text-gray-700 hover:text-blue-600 font-medium transition-colors whitespace-nowrap"
                 >
                   {category.name}
@@ -208,7 +208,7 @@ export function Header() {
               {categories.map((category) => (
                 <Link
                   key={category.id}
-                  href={`/category/${category.slug}`}
+                  href={`/categories/${category.slug}`}
                   className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >

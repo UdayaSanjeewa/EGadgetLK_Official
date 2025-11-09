@@ -8,12 +8,12 @@ export function Footer() {
     {
       title: 'Categories',
       links: [
-        { name: 'Vehicles', href: '/category/vehicles' },
-        { name: 'Electronics', href: '/category/electronics' },
-        { name: 'Property', href: '/category/property' },
-        { name: 'Fashion', href: '/category/fashion' },
-        { name: 'Home & Garden', href: '/category/home-garden' },
-        { name: 'Services', href: '/category/services' }
+        { name: 'Vehicles', href: '/categories/vehicles' },
+        { name: 'Electronics', href: '/categories/electronics' },
+        { name: 'Property', href: '/categories/property' },
+        { name: 'Fashion', href: '/categories/fashion' },
+        { name: 'Home & Garden', href: '/categories/home-garden' },
+        { name: 'Services', href: '/categories/services' }
       ]
     },
     {
