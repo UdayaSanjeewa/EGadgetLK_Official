@@ -72,9 +72,8 @@ export default function NewCategory() {
       .insert([{
         name: formData.name,
         slug: formData.slug,
-        description: formData.description || null,
-        image: formData.image || 'https://images.pexels.com/photos/1670187/pexels-photo-1670187.jpeg',
-        product_count: 0,
+        description: formData.description || '',
+        image_url: formData.image || 'https://images.pexels.com/photos/1229861/pexels-photo-1229861.jpeg',
       }]);
 
     setIsSaving(false);

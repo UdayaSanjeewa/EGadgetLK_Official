@@ -148,9 +148,9 @@ export async function getCategories(): Promise<Category[]> {
     id: c.id,
     name: c.name,
     slug: c.slug,
-    image: c.image,
-    description: c.description,
-    productCount: c.product_count
+    image: c.image_url || '',
+    description: c.description || '',
+    productCount: 0
   }));
 }
 

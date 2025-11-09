@@ -61,7 +61,7 @@ export default function EditCategory() {
       name: data.name,
       slug: data.slug,
       description: data.description || '',
-      image: data.image || '',
+      image: data.image_url || '',
     });
   };
 
@@ -99,8 +99,8 @@ export default function EditCategory() {
       .update({
         name: formData.name,
         slug: formData.slug,
-        description: formData.description || null,
-        image: formData.image || 'https://images.pexels.com/photos/1670187/pexels-photo-1670187.jpeg',
+        description: formData.description || '',
+        image_url: formData.image || 'https://images.pexels.com/photos/1229861/pexels-photo-1229861.jpeg',
       })
       .eq('id', params.id);
 
