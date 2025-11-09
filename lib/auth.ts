@@ -15,12 +15,18 @@ export class AuthManager {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
 
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, phone, role')
+      .eq('id', user.id)
+      .maybeSingle();
+
     return {
       id: user.id,
-      name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+      name: profile?.full_name || user.email?.split('@')[0] || 'User',
       email: user.email || '',
-      mobile: user.user_metadata?.mobile,
-      role: user.user_metadata?.role || 'user'
+      mobile: profile?.phone,
+      role: profile?.role || 'user'
     };
   }
 
@@ -63,12 +69,18 @@ export class AuthManager {
       }
 
       if (data.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, phone, role')
+          .eq('id', data.user.id)
+          .maybeSingle();
+
         const user: User = {
           id: data.user.id,
-          name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'User',
+          name: profile?.full_name || data.user.email?.split('@')[0] || 'User',
           email: data.user.email || '',
-          mobile: data.user.user_metadata?.mobile,
-          role: data.user.user_metadata?.role || 'user'
+          mobile: profile?.phone,
+          role: profile?.role || 'user'
         };
         window.dispatchEvent(new CustomEvent('authStateChanged', { detail: user }));
         return { success: true, user };
@@ -92,14 +104,7 @@ export class AuthManager {
 
       const { data, error } = await supabase.auth.signUp({
         email,
-        password,
-        options: {
-          data: {
-            name: name.trim(),
-            mobile: mobile,
-            role: 'user'
-          }
-        }
+        password
       });
 
       if (error) {
@@ -107,6 +112,17 @@ export class AuthManager {
       }
 
       if (data.user) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        await supabase
+          .from('profiles')
+          .update({
+            full_name: name.trim(),
+            phone: mobile || '',
+            role: 'customer'
+          })
+          .eq('id', data.user.id);
+
         const user: User = {
           id: data.user.id,
           name: name.trim(),
