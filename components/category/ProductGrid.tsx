@@ -70,12 +70,18 @@ export function ProductGrid({ products, viewMode = 'grid' }: ProductGridProps) {
                 ? "relative aspect-[4/3] overflow-hidden"
                 : "relative w-48 h-36 overflow-hidden flex-shrink-0"
             }>
-              <Image
-                src={product.images[0]}
-                alt={product.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
+              {product.images && product.images.length > 0 && product.images[0] ? (
+                <Image
+                  src={product.images[0]}
+                  alt={product.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400">No image</span>
+                </div>
+              )}
               
               {/* Badges */}
               <div className="absolute top-3 left-3 flex flex-col gap-2">

@@ -167,25 +167,50 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
-  const { data: categoriesData } = await supabase
+  const { data: categoriesData, error: categoryError } = await supabase
     .from('categories')
     .select('*');
 
-  const category = categoriesData?.find(c => c.slug === categorySlug);
-  if (!category) return [];
+  if (categoryError) {
+    console.error('Error fetching categories:', categoryError);
+    return [];
+  }
 
-  const { data: productsData } = await supabase
+  const categoryData = categoriesData?.find(c => c.slug === categorySlug);
+  if (!categoryData) {
+    console.error('Category not found:', categorySlug);
+    return [];
+  }
+
+  const { data: productsData, error: productsError } = await supabase
     .from('products')
     .select('*')
-    .eq('category_id', category.id)
+    .eq('category_id', categoryData.id)
     .order('created_at', { ascending: false });
 
-  if (!productsData) return [];
+  if (productsError) {
+    console.error('Error fetching products:', productsError);
+    return [];
+  }
+
+  if (!productsData || productsData.length === 0) {
+    console.log('No products found for category:', categorySlug);
+    return [];
+  }
+
+  const category: Category = {
+    id: categoryData.id,
+    name: categoryData.name,
+    slug: categoryData.slug,
+    image: categoryData.image_url || '',
+    description: categoryData.description || '',
+    productCount: productsData.length
+  };
 
   return productsData.map(p => ({
     id: p.id,
     title: p.title,
-    description: p.description,
+    description: p.description || '',
     price: p.price,
     originalPrice: p.original_price,
     images: p.images || [],
