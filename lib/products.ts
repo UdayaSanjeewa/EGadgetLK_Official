@@ -21,7 +21,7 @@ export async function getFeaturedProducts(): Promise<Product[]> {
     description: p.description,
     price: p.price,
     originalPrice: p.original_price,
-    images: p.images,
+    images: p.images || [],
     category: categoriesData.find(c => c.id === p.category_id) || {
       id: '',
       name: 'Uncategorized',
@@ -30,13 +30,13 @@ export async function getFeaturedProducts(): Promise<Product[]> {
       productCount: 0
     },
     condition: p.condition,
-    location: p.location,
+    location: p.location || 'Sri Lanka',
     seller_id: p.seller_id || '',
     seller: {
       id: p.seller_id || 'admin',
-      name: p.seller_name,
-      avatar: p.seller_avatar,
-      rating: p.seller_rating
+      name: p.seller_name || 'Admin',
+      avatar: p.seller_avatar || '',
+      rating: p.seller_rating || 5
     },
     features: p.features || [],
     tags: p.tags || [],
@@ -65,7 +65,7 @@ export async function getAllProducts(): Promise<Product[]> {
     description: p.description,
     price: p.price,
     originalPrice: p.original_price,
-    images: p.images,
+    images: p.images || [],
     category: categoriesData.find(c => c.id === p.category_id) || {
       id: '',
       name: 'Uncategorized',
@@ -74,13 +74,13 @@ export async function getAllProducts(): Promise<Product[]> {
       productCount: 0
     },
     condition: p.condition,
-    location: p.location,
+    location: p.location || 'Sri Lanka',
     seller_id: p.seller_id || '',
     seller: {
       id: p.seller_id || 'admin',
-      name: p.seller_name,
-      avatar: p.seller_avatar,
-      rating: p.seller_rating
+      name: p.seller_name || 'Admin',
+      avatar: p.seller_avatar || '',
+      rating: p.seller_rating || 5
     },
     features: p.features || [],
     tags: p.tags || [],
@@ -110,7 +110,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     description: productData.description,
     price: productData.price,
     originalPrice: productData.original_price,
-    images: productData.images,
+    images: productData.images || [],
     category: categoriesData.find(c => c.id === productData.category_id) || {
       id: '',
       name: 'Uncategorized',
@@ -119,13 +119,13 @@ export async function getProductById(id: string): Promise<Product | null> {
       productCount: 0
     },
     condition: productData.condition,
-    location: productData.location,
+    location: productData.location || 'Sri Lanka',
     seller_id: productData.seller_id || '',
     seller: {
       id: productData.seller_id || 'admin',
-      name: productData.seller_name,
-      avatar: productData.seller_avatar,
-      rating: productData.seller_rating
+      name: productData.seller_name || 'Admin',
+      avatar: productData.seller_avatar || '',
+      rating: productData.seller_rating || 5
     },
     features: productData.features || [],
     tags: productData.tags || [],
@@ -188,16 +188,16 @@ export async function getProductsByCategory(categorySlug: string): Promise<Produ
     description: p.description,
     price: p.price,
     originalPrice: p.original_price,
-    images: p.images,
+    images: p.images || [],
     category: category,
     condition: p.condition,
-    location: p.location,
+    location: p.location || 'Sri Lanka',
     seller_id: p.seller_id || '',
     seller: {
       id: p.seller_id || 'admin',
-      name: p.seller_name,
-      avatar: p.seller_avatar,
-      rating: p.seller_rating
+      name: p.seller_name || 'Admin',
+      avatar: p.seller_avatar || '',
+      rating: p.seller_rating || 5
     },
     features: p.features || [],
     tags: p.tags || [],
