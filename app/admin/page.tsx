@@ -42,9 +42,9 @@ interface TopCustomer {
 interface TopProduct {
   id: string;
   name: string;
-  category: string;
-  stock: number;
-  image?: string;
+  category_id: string;
+  stock_quantity: number;
+  images?: any;
 }
 
 export default function AdminDashboard() {
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
 
       const { data: products } = await supabase
         .from('products')
-        .select('id, name, category, stock, images')
+        .select('id, name, category_id, stock_quantity, images')
         .limit(4);
 
       const { data: customerOrders } = await supabase
@@ -301,15 +301,15 @@ export default function AdminDashboard() {
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">{product.name}</p>
-                        <p className="text-sm text-gray-500">{product.category}</p>
+                        <p className="text-sm text-gray-500">Product</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <Badge
-                        variant={product.stock > 10 ? "default" : "destructive"}
-                        className={product.stock > 10 ? "bg-green-100 text-green-700 hover:bg-green-100" : ""}
+                        variant={product.stock_quantity > 10 ? "default" : "destructive"}
+                        className={product.stock_quantity > 10 ? "bg-green-100 text-green-700 hover:bg-green-100" : ""}
                       >
-                        {product.stock > 10 ? 'In Stock' : 'Out Of Stock'}
+                        {product.stock_quantity > 10 ? 'In Stock' : 'Low Stock'}
                       </Badge>
                     </div>
                   </div>

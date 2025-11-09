@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getFeaturedProducts } from '@/lib/products';
+import { supabase } from '@/lib/supabase';
 import { Heart, Star, MapPin, Clock, Eye, BadgeCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,8 +19,52 @@ export function FeaturedProducts() {
   }, []);
 
   const loadProducts = async () => {
-    const data = await getFeaturedProducts();
-    setProducts(data);
+    // Get all products, prioritizing featured ones
+    const { data: categoriesData } = await supabase.from('categories').select('*');
+    const { data: productsData } = await supabase
+      .from('products')
+      .select('*')
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(12);
+
+    if (!productsData || !categoriesData) {
+      setIsLoading(false);
+      return;
+    }
+
+    const formattedProducts = productsData.map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      description: p.description,
+      price: p.price,
+      originalPrice: p.original_price,
+      images: p.images,
+      category: categoriesData.find((c: any) => c.id === p.category_id) || {
+        id: '',
+        name: 'Uncategorized',
+        slug: 'uncategorized',
+        image: '',
+        productCount: 0
+      },
+      condition: p.condition,
+      location: p.location || 'Sri Lanka',
+      seller_id: p.seller_id || '',
+      seller: {
+        id: p.seller_id || 'admin',
+        name: p.seller_name,
+        avatar: p.seller_avatar,
+        rating: p.seller_rating
+      },
+      features: p.features || [],
+      tags: p.tags || [],
+      createdAt: p.created_at,
+      updatedAt: p.updated_at,
+      isNew: p.is_new,
+      isFeatured: p.is_featured
+    }));
+
+    setProducts(formattedProducts);
     setIsLoading(false);
   };
 
@@ -52,10 +96,10 @@ export function FeaturedProducts() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Featured Products
+              Latest Products
             </h2>
             <p className="text-lg text-gray-600">
-              Hand-picked premium listings from verified sellers
+              Discover our newest and featured listings
             </p>
           </div>
           <Link
