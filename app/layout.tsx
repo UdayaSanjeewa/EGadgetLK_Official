@@ -37,7 +37,7 @@ export default function RootLayout({
               {children}
             </main>
             {!hideHeaderFooter && <Footer />}
-            <Toaster position="top-right" />
+            <Toaster position="bottom-right" />
           </div>
         </AuthProvider>
       </body>
