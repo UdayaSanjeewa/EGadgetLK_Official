@@ -8,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Phone, Lock, Eye, EyeOff, User, ShoppingCart, Mail } from 'lucide-react';
+import { Phone, Lock, Eye, EyeOff, User, ShoppingCart, Mail, MailCheck, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { AuthManager } from '@/lib/auth';
 
 export default function SignUpPage() {
   const [name, setName] = useState('');
@@ -22,6 +23,8 @@ export default function SignUpPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
   const router = useRouter();
   const { signUp } = useAuth();
 
@@ -43,6 +46,10 @@ export default function SignUpPage() {
       if (!result.success) {
         setError(result.error || 'Sign up failed');
         toast.error(result.error || 'Sign up failed');
+      } else if (result.needsVerification) {
+        setUserEmail(email);
+        setShowVerificationMessage(true);
+        toast.success('Account created! Please check your email to verify your account.');
       } else {
         toast.success('Account created successfully! Welcome to E-GadgetLK!');
         setTimeout(() => {
@@ -57,6 +64,104 @@ export default function SignUpPage() {
       setIsLoading(false);
     }
   };
+
+  const handleResendVerification = async () => {
+    setIsLoading(true);
+    try {
+      const result = await AuthManager.resendVerificationEmail(userEmail);
+      if (result.success) {
+        toast.success('Verification email sent! Please check your inbox.');
+      } else {
+        toast.error(result.error || 'Failed to send verification email');
+      }
+    } catch (error) {
+      toast.error('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (showVerificationMessage) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <Link href="/" className="inline-flex items-center space-x-2">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <ShoppingCart className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">E-GadgetLK</h1>
+                <p className="text-sm text-gray-500">Your Tech Store</p>
+              </div>
+            </Link>
+          </div>
+
+          <Card className="shadow-xl border-0">
+            <CardHeader className="space-y-1 pb-6">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <MailCheck className="w-8 h-8 text-green-600" />
+              </div>
+              <CardTitle className="text-2xl font-bold text-center text-gray-900">
+                Verify Your Email
+              </CardTitle>
+              <CardDescription className="text-center text-gray-600">
+                We've sent a verification link to your email
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <Alert className="border-blue-200 bg-blue-50">
+                <AlertCircle className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-800">
+                  <strong className="block mb-1">{userEmail}</strong>
+                  Please check your inbox and click the verification link to activate your account.
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm text-gray-600">
+                  <p className="font-medium text-gray-900">What to do next:</p>
+                  <ol className="list-decimal list-inside space-y-1 ml-2">
+                    <li>Open your email inbox</li>
+                    <li>Look for an email from E-GadgetLK</li>
+                    <li>Click the verification link</li>
+                    <li>Sign in to your account</li>
+                  </ol>
+                </div>
+
+                <div className="text-center space-y-3">
+                  <p className="text-sm text-gray-600">
+                    Didn't receive the email?
+                  </p>
+                  <Button
+                    onClick={handleResendVerification}
+                    disabled={isLoading}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {isLoading ? 'Sending...' : 'Resend Verification Email'}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t space-y-3">
+                <Link href="/auth/signin">
+                  <Button variant="outline" className="w-full">
+                    Go to Sign In
+                  </Button>
+                </Link>
+                <Link href="/">
+                  <Button variant="ghost" className="w-full">
+                    Back to Home
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">

@@ -8,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Mail, Lock, Eye, EyeOff, ShoppingCart } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ShoppingCart, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { AuthManager } from '@/lib/auth';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -18,6 +19,7 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [needsVerification, setNeedsVerification] = useState(false);
   const router = useRouter();
   const { signIn } = useAuth();
 
@@ -25,12 +27,16 @@ export default function SignInPage() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setNeedsVerification(false);
 
     try {
       const result = await signIn(email, password);
 
       if (!result.success) {
         setError(result.error || 'Sign in failed');
+        if (result.needsVerification) {
+          setNeedsVerification(true);
+        }
         toast.error(result.error || 'Sign in failed');
       } else {
         const role = result.user?.role || 'user';
@@ -45,6 +51,27 @@ export default function SignInPage() {
     } catch (error) {
       setError('An unexpected error occurred');
       toast.error('An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      toast.error('Please enter your email address');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await AuthManager.resendVerificationEmail(email);
+      if (result.success) {
+        toast.success('Verification email sent! Please check your inbox.');
+      } else {
+        toast.error(result.error || 'Failed to send verification email');
+      }
+    } catch (error) {
+      toast.error('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -79,10 +106,29 @@ export default function SignInPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <Alert className="border-red-200 bg-red-50">
+                  <AlertCircle className="h-4 w-4 text-red-600" />
                   <AlertDescription className="text-red-700">
                     {error}
                   </AlertDescription>
                 </Alert>
+              )}
+
+              {needsVerification && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <p className="text-sm text-yellow-800 mb-3">
+                    Your email is not verified yet. Please check your inbox for the verification link.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={isLoading}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    {isLoading ? 'Sending...' : 'Resend Verification Email'}
+                  </Button>
+                </div>
               )}
 
               <div className="space-y-2">

@@ -57,7 +57,7 @@ export class AuthManager {
     window.dispatchEvent(new CustomEvent('authStateChanged', { detail: null }));
   }
 
-  static async signIn(email: string, password: string): Promise<{ success: boolean; error?: string; user?: User }> {
+  static async signIn(email: string, password: string): Promise<{ success: boolean; error?: string; user?: User; needsVerification?: boolean }> {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -69,6 +69,15 @@ export class AuthManager {
       }
 
       if (data.user) {
+        if (!data.user.email_confirmed_at) {
+          await supabase.auth.signOut();
+          return {
+            success: false,
+            error: 'Please verify your email address before signing in. Check your inbox for the verification link.',
+            needsVerification: true
+          };
+        }
+
         const { data: profile } = await supabase
           .from('profiles')
           .select('full_name, phone, role')
@@ -92,7 +101,7 @@ export class AuthManager {
     }
   }
 
-  static async signUp(name: string, email: string, password: string, mobile?: string): Promise<{ success: boolean; error?: string; user?: User }> {
+  static async signUp(name: string, email: string, password: string, mobile?: string): Promise<{ success: boolean; error?: string; user?: User; needsVerification?: boolean }> {
     try {
       if (!name || name.trim().length < 2) {
         return { success: false, error: 'Name must be at least 2 characters long' };
@@ -104,7 +113,14 @@ export class AuthManager {
 
       const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/verify-email`,
+          data: {
+            full_name: name.trim(),
+            phone: mobile || ''
+          }
+        }
       });
 
       if (error) {
@@ -123,18 +139,54 @@ export class AuthManager {
           })
           .eq('id', data.user.id);
 
-        const user: User = {
-          id: data.user.id,
-          name: name.trim(),
-          email: data.user.email || '',
-          mobile: mobile,
-          role: 'user'
+        const needsVerification = !data.user.email_confirmed_at;
+
+        if (!needsVerification) {
+          const user: User = {
+            id: data.user.id,
+            name: name.trim(),
+            email: data.user.email || '',
+            mobile: mobile,
+            role: 'user'
+          };
+          window.dispatchEvent(new CustomEvent('authStateChanged', { detail: user }));
+          return { success: true, user };
+        }
+
+        return {
+          success: true,
+          needsVerification: true,
+          user: {
+            id: data.user.id,
+            name: name.trim(),
+            email: data.user.email || '',
+            mobile: mobile,
+            role: 'user'
+          }
         };
-        window.dispatchEvent(new CustomEvent('authStateChanged', { detail: user }));
-        return { success: true, user };
       }
 
       return { success: false, error: 'Signup failed' };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'An error occurred' };
+    }
+  }
+
+  static async resendVerificationEmail(email: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/verify-email`,
+        }
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
     } catch (error: any) {
       return { success: false, error: error.message || 'An error occurred' };
     }
