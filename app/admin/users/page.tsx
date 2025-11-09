@@ -48,12 +48,12 @@ import {
   Eye,
   Shield,
   RefreshCw,
-  UserCog,
   Mail,
   Phone,
   MapPin,
   Calendar,
-  ShoppingBag
+  ShoppingBag,
+  UserCog
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -182,11 +182,9 @@ export default function AdminUsersPage() {
     switch (role) {
       case 'admin':
         return 'bg-red-100 text-red-800';
-      case 'seller':
-        return 'bg-blue-100 text-blue-800';
-      case 'user':
+      case 'customer':
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-blue-100 text-blue-800';
     }
   };
 
@@ -204,8 +202,7 @@ export default function AdminUsersPage() {
   const stats = {
     total: users.length,
     admin: users.filter(u => u.role === 'admin').length,
-    seller: users.filter(u => u.role === 'seller').length,
-    user: users.filter(u => u.role === 'user').length,
+    customer: users.filter(u => u.role === 'customer').length,
   };
 
   if (isLoading) {
@@ -245,7 +242,7 @@ export default function AdminUsersPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
@@ -274,20 +271,8 @@ export default function AdminUsersPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Sellers</p>
-                  <p className="text-3xl font-bold text-blue-600">{stats.seller}</p>
-                </div>
-                <UserCog className="w-10 h-10 text-blue-500 opacity-50" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
                   <p className="text-sm text-gray-600">Customers</p>
-                  <p className="text-3xl font-bold text-green-600">{stats.user}</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.customer}</p>
                 </div>
                 <ShoppingBag className="w-10 h-10 text-green-500 opacity-50" />
               </div>
@@ -317,8 +302,7 @@ export default function AdminUsersPage() {
                 <SelectContent>
                   <SelectItem value="all">All Roles</SelectItem>
                   <SelectItem value="admin">Admins</SelectItem>
-                  <SelectItem value="seller">Sellers</SelectItem>
-                  <SelectItem value="user">Customers</SelectItem>
+                  <SelectItem value="customer">Customers</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -533,8 +517,7 @@ export default function AdminUsersPage() {
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="user">Customer</SelectItem>
-                        <SelectItem value="seller">Seller</SelectItem>
+                        <SelectItem value="customer">Customer</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>
