@@ -139,6 +139,12 @@ export default function CheckoutPage() {
 
     try {
       const orderNumberResult = await supabase.rpc('generate_order_number');
+
+      if (orderNumberResult.error) {
+        console.error('Error generating order number:', orderNumberResult.error);
+        throw orderNumberResult.error;
+      }
+
       const orderNumber = orderNumberResult.data;
 
       const orderData = {
@@ -163,24 +169,30 @@ export default function CheckoutPage() {
         .select()
         .single();
 
-      if (orderError) throw orderError;
+      if (orderError) {
+        console.error('Error creating order:', orderError);
+        throw orderError;
+      }
 
       const orderItems = cart.map(item => ({
         order_id: order.id,
         product_id: item.product.id,
         product_title: item.product.title,
-        product_image: item.product.images[0],
+        product_image: item.product.images && item.product.images.length > 0 ? item.product.images[0] : '',
         quantity: item.quantity,
         price: item.product.price,
         subtotal: item.product.price * item.quantity,
-        seller_id: item.product.seller_id
+        seller_id: item.product.seller_id || null
       }));
 
       const { error: itemsError } = await supabase
         .from('order_items')
         .insert(orderItems);
 
-      if (itemsError) throw itemsError;
+      if (itemsError) {
+        console.error('Error creating order items:', itemsError);
+        throw itemsError;
+      }
 
       clearCart();
 
