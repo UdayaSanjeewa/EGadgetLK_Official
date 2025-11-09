@@ -35,7 +35,6 @@ export default function NewProduct() {
     original_price: '',
     category_id: '',
     condition: 'used',
-    location: '',
     seller_name: 'Admin',
     seller_rating: '5',
     is_featured: false,
@@ -89,7 +88,7 @@ export default function NewProduct() {
         return;
       }
 
-      const { error } = await supabase.from('products').insert({
+      const { data, error } = await supabase.from('products').insert({
         title: formData.title,
         description: formData.description,
         price: parseFloat(formData.price),
@@ -97,7 +96,7 @@ export default function NewProduct() {
         images: filteredImages,
         category_id: formData.category_id || null,
         condition: formData.condition as 'new' | 'used' | 'refurbished',
-        location: formData.location,
+        location: '',
         seller_name: formData.seller_name,
         seller_rating: parseFloat(formData.seller_rating),
         features: filteredFeatures,
@@ -106,7 +105,10 @@ export default function NewProduct() {
         is_new: formData.is_new,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Product insert error:', error);
+        throw error;
+      }
 
       toast({
         title: 'Success',
@@ -245,16 +247,6 @@ export default function NewProduct() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="location">Location *</Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => setFormData({...formData, location: e.target.value})}
-                  required
-                />
               </div>
             </CardContent>
           </Card>
