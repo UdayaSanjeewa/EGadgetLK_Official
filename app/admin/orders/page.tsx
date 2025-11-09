@@ -72,7 +72,6 @@ interface OrderWithDetails extends Order {
 
 const statusOptions = [
   { value: 'pending', label: 'Pending', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'confirmed', label: 'Confirmed', color: 'bg-blue-100 text-blue-800' },
   { value: 'processing', label: 'Processing', color: 'bg-cyan-100 text-cyan-800' },
   { value: 'shipped', label: 'Shipped', color: 'bg-purple-100 text-purple-800' },
   { value: 'delivered', label: 'Delivered', color: 'bg-green-100 text-green-800' },
@@ -284,7 +283,6 @@ export default function AdminOrderManagement() {
     total: orders.length,
     totalRevenue: orders.reduce((sum, o) => sum + Number(o.total_amount), 0),
     pending: orders.filter(o => o.status === 'pending').length,
-    confirmed: orders.filter(o => o.status === 'confirmed').length,
     processing: orders.filter(o => o.status === 'processing').length,
     shipped: orders.filter(o => o.status === 'shipped').length,
     delivered: orders.filter(o => o.status === 'delivered').length,
