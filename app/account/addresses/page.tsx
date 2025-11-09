@@ -15,15 +15,14 @@ import { toast } from 'sonner';
 
 interface Address {
   id: string;
-  address_type: string;
-  label: string;
-  name: string;
+  user_id: string;
+  full_name: string;
   phone: string;
   address_line1: string;
   address_line2?: string;
   city: string;
-  state?: string;
-  postal_code?: string;
+  state: string;
+  postal_code: string;
   country: string;
   is_default: boolean;
 }
@@ -36,9 +35,7 @@ export default function AddressesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [formData, setFormData] = useState({
-    address_type: 'shipping',
-    label: '',
-    name: '',
+    full_name: '',
     phone: '',
     address_line1: '',
     address_line2: '',
@@ -67,7 +64,7 @@ export default function AddressesPage() {
     setIsLoading(true);
     try {
       const { data, error } = await supabase
-        .from('user_addresses')
+        .from('addresses')
         .select('*')
         .eq('user_id', user.id)
         .order('is_default', { ascending: false })
@@ -99,7 +96,7 @@ export default function AddressesPage() {
     try {
       if (editingAddress) {
         const { error } = await supabase
-          .from('user_addresses')
+          .from('addresses')
           .update(formData)
           .eq('id', editingAddress.id);
 
@@ -107,7 +104,7 @@ export default function AddressesPage() {
         toast.success('Address updated successfully');
       } else {
         const { error } = await supabase
-          .from('user_addresses')
+          .from('addresses')
           .insert({
             user_id: user.id,
             ...formData
@@ -129,9 +126,7 @@ export default function AddressesPage() {
   const handleEdit = (address: Address) => {
     setEditingAddress(address);
     setFormData({
-      address_type: address.address_type,
-      label: address.label,
-      name: address.name,
+      full_name: address.full_name,
       phone: address.phone,
       address_line1: address.address_line1,
       address_line2: address.address_line2 || '',
@@ -149,7 +144,7 @@ export default function AddressesPage() {
 
     try {
       const { error } = await supabase
-        .from('user_addresses')
+        .from('addresses')
         .delete()
         .eq('id', addressId);
 
@@ -165,7 +160,7 @@ export default function AddressesPage() {
   const handleSetDefault = async (addressId: string, addressType: string) => {
     try {
       const { error } = await supabase
-        .from('user_addresses')
+        .from('addresses')
         .update({ is_default: true })
         .eq('id', addressId);
 
@@ -181,9 +176,7 @@ export default function AddressesPage() {
   const resetForm = () => {
     setEditingAddress(null);
     setFormData({
-      address_type: 'shipping',
-      label: '',
-      name: '',
+      full_name: '',
       phone: '',
       address_line1: '',
       address_line2: '',
@@ -195,11 +188,6 @@ export default function AddressesPage() {
     });
   };
 
-  const getLabelIcon = (label: string) => {
-    if (label.toLowerCase().includes('home')) return <Home className="h-4 w-4" />;
-    if (label.toLowerCase().includes('office') || label.toLowerCase().includes('work')) return <Briefcase className="h-4 w-4" />;
-    return <MapPin className="h-4 w-4" />;
-  };
 
   if (authLoading || isLoading) {
     return (
@@ -253,39 +241,11 @@ export default function AddressesPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="address_type">Address Type *</Label>
-                    <select
-                      id="address_type"
-                      name="address_type"
-                      value={formData.address_type}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      required
-                    >
-                      <option value="shipping">Shipping</option>
-                      <option value="billing">Billing</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="label">Label *</Label>
+                    <Label htmlFor="full_name">Full Name *</Label>
                     <Input
-                      id="label"
-                      name="label"
-                      value={formData.label}
-                      onChange={handleInputChange}
-                      placeholder="e.g., Home, Office"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name *</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
+                      id="full_name"
+                      name="full_name"
+                      value={formData.full_name}
                       onChange={handleInputChange}
                       required
                     />
@@ -422,19 +382,16 @@ export default function AddressesPage() {
               <Card key={address.id} className={address.is_default ? 'ring-2 ring-blue-500' : ''}>
                 <CardHeader className="flex flex-row items-start justify-between space-y-0">
                   <div className="flex items-center gap-2">
-                    {getLabelIcon(address.label)}
-                    <CardTitle className="text-lg">{address.label}</CardTitle>
+                    <MapPin className="h-4 w-4" />
+                    <CardTitle className="text-lg">{address.city}</CardTitle>
                     {address.is_default && (
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                     )}
                   </div>
-                  <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full capitalize">
-                    {address.address_type}
-                  </span>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <p className="font-medium text-gray-900">{address.name}</p>
+                    <p className="font-medium text-gray-900">{address.full_name}</p>
                     <p className="text-sm text-gray-600">{address.phone}</p>
                   </div>
                   <div className="text-sm text-gray-700">
@@ -452,7 +409,7 @@ export default function AddressesPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleSetDefault(address.id, address.address_type)}
+                        onClick={() => handleSetDefault(address.id, 'shipping')}
                         className="flex-1"
                       >
                         Set Default

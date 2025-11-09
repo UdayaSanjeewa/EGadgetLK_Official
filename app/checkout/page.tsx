@@ -85,7 +85,7 @@ export default function CheckoutPage() {
     if (!user) return;
 
     const { data, error } = await supabase
-      .from('user_addresses')
+      .from('addresses')
       .select('*')
       .eq('user_id', user.id)
       .order('is_default', { ascending: false });
@@ -103,7 +103,7 @@ export default function CheckoutPage() {
   const loadAddressToForm = (address: any) => {
     setFormData(prev => ({
       ...prev,
-      name: address.name || prev.name,
+      name: address.full_name || prev.name,
       mobile: address.phone || prev.mobile,
       address: `${address.address_line1}${address.address_line2 ? ', ' + address.address_line2 : ''}`,
       city: address.city || '',
@@ -255,14 +255,14 @@ export default function CheckoutPage() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <p className="font-medium">{address.label}</p>
+                              <p className="font-medium">{address.city}</p>
                               {address.is_default && (
                                 <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded">
                                   Default
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-gray-600">{address.name}</p>
+                            <p className="text-sm text-gray-600">{address.full_name}</p>
                             <p className="text-sm text-gray-600">{address.phone}</p>
                             <p className="text-sm text-gray-600 mt-1">
                               {address.address_line1}
