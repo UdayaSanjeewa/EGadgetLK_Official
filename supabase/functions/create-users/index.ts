@@ -69,32 +69,38 @@ Deno.serve(async (req: Request) => {
     const results = [];
 
     for (const userData of users) {
-      const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers();
-      const userExists = existingUser?.users.some(u => u.email === userData.email);
+      try {
+        const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers();
+        const userExists = existingUser?.users.some(u => u.email === userData.email);
 
-      if (userExists) {
-        results.push({
+        if (userExists) {
+          results.push({
+            email: userData.email,
+            status: 'already_exists',
+          });
+          continue;
+        }
+
+        const { data, error } = await supabaseAdmin.auth.admin.createUser({
           email: userData.email,
-          status: 'already_exists',
+          password: userData.password,
+          email_confirm: true,
         });
-        continue;
-      }
 
-      const { data, error } = await supabaseAdmin.auth.admin.createUser({
-        email: userData.email,
-        password: userData.password,
-        email_confirm: true,
-      });
+        if (error) {
+          results.push({
+            email: userData.email,
+            status: 'error',
+            error: error.message,
+          });
+          continue;
+        }
 
-      if (error) {
-        results.push({
-          email: userData.email,
-          status: 'error',
-          error: error.message,
-        });
-      } else {
-        // Update profile role
-        await supabaseAdmin
+        // Wait a bit for trigger to create profile
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Update profile with role and name
+        const { error: updateError } = await supabaseAdmin
           .from('profiles')
           .update({ 
             full_name: userData.name,
@@ -102,11 +108,26 @@ Deno.serve(async (req: Request) => {
           })
           .eq('id', data.user.id);
 
+        if (updateError) {
+          results.push({
+            email: userData.email,
+            status: 'created_but_profile_update_failed',
+            user_id: data.user.id,
+            error: updateError.message,
+          });
+        } else {
+          results.push({
+            email: userData.email,
+            status: 'created',
+            user_id: data.user.id,
+            role: userData.role,
+          });
+        }
+      } catch (err) {
         results.push({
           email: userData.email,
-          status: 'created',
-          user_id: data.user.id,
-          role: userData.role,
+          status: 'error',
+          error: err.message,
         });
       }
     }
