@@ -23,34 +23,48 @@ function PaymentSuccessContent() {
 
   const verifyPayment = async () => {
     try {
-      const paymentId = searchParams.get('payment_id');
+      const sessionId = searchParams.get('session_id');
       const orderId = searchParams.get('order_id');
 
-      if (!paymentId || !orderId) {
+      if (!orderId) {
         setVerificationStatus('failed');
         setMessage('Invalid payment details');
         setIsVerifying(false);
         return;
       }
 
-      const verificationResult = await paymentGateway.verifyPayment(paymentId);
+      const { data: order } = await supabase
+        .from('orders')
+        .select('order_number, payment_status, status')
+        .eq('id', orderId)
+        .maybeSingle();
 
-      if (verificationResult.success) {
-        const { data: order } = await supabase
-          .from('orders')
-          .select('order_number')
-          .eq('id', orderId)
-          .maybeSingle();
+      if (order) {
+        setOrderNumber(order.order_number);
 
-        if (order) {
-          setOrderNumber(order.order_number);
+        if (order.payment_status === 'completed') {
+          setVerificationStatus('success');
+          setMessage('Payment completed successfully!');
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+
+          const { data: updatedOrder } = await supabase
+            .from('orders')
+            .select('payment_status')
+            .eq('id', orderId)
+            .maybeSingle();
+
+          if (updatedOrder?.payment_status === 'completed') {
+            setVerificationStatus('success');
+            setMessage('Payment completed successfully!');
+          } else {
+            setVerificationStatus('pending');
+            setMessage('Payment is being processed. Please check your orders page.');
+          }
         }
-
-        setVerificationStatus('success');
-        setMessage('Payment completed successfully!');
       } else {
         setVerificationStatus('failed');
-        setMessage(verificationResult.error || 'Payment verification failed');
+        setMessage('Order not found');
       }
     } catch (error: any) {
       console.error('Payment verification error:', error);
